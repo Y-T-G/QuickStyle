@@ -6,8 +6,7 @@ import openvino as ov
 
 from .stylizer import Stylizer
 from .segmenter import Segmenter
-
-from ..utils.utils import download_file
+from .utils import download_file
 
 
 class QuickPaintApp:
@@ -32,12 +31,12 @@ class QuickPaintApp:
             ov_model = ov.convert_model(f"{base_model_dir}/{model_path}")
             ov.save_model(ov_model, sty_ir_path)
 
-        self.stylizer = Stylizer(sty_ir_path, self.device)
+        self.stylizer = Stylizer(style, sty_ir_path, self.device)
 
     # Function to apply inpainting based on selected checkboxes
     def stylize_selected_objects(self, checkboxes, style, masks, class_ids,
                                  image_np):
-        if self.stylizer is None:
+        if self.stylizer is None or self.stylizer.style != style:
             self.init_stylizer(style)
 
         selected_labels = [selected for selected in checkboxes if checkboxes]
@@ -49,7 +48,7 @@ class QuickPaintApp:
         ]
 
         # Apply inpainting
-        result = self.stylizer.stylize(image_np, filtered_masks)
+        result = self.stylizer.stylize(image_np.copy(), filtered_masks)
 
         return result
 
@@ -105,9 +104,9 @@ class QuickPaintApp:
             with gr.Row():
                 with gr.Column():
                     checkboxes = gr.CheckboxGroup(visible=False)
-                    stylize_button = gr.Button(visible=False)
                 with gr.Column():
                     style = gr.Radio(visible=False)
+                stylize_button = gr.Button(visible=False)
             with gr.Row():
                 stylize_canvas = gr.Image(label="Stylized", visible=True)
 
@@ -129,10 +128,10 @@ class QuickPaintApp:
                 show_progress=True,
             )
 
-    def launch(self):
+    def launch(self, **kwargs):
         self.build()
         # Run Gradio app
-        self.app.launch()
+        self.app.launch(**kwargs)
 
     def shutdown(self):
         self.app.close()

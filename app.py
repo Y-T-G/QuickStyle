@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from src.quick_paint_app import QuickPaintApp
-from utils.utils import download_ir_model
+from src.utils import download_ir_model
 
 
 if __name__ == "__main__":
@@ -16,8 +16,7 @@ if __name__ == "__main__":
         download_ir_model(model_xml_url, base_model_dir)
 
     app = QuickPaintApp(
-        "model/instance-segmentation-security-1040.xml",
-        "model/gmcnn-places2-tf.xml",
+        "model/instance-segmentation-security-1040.xml"
     )
 
     app.launch()

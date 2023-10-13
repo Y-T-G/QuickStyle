@@ -1,6 +1,4 @@
 openvino
 numpy
-cv2
+opencv-python
 gradio
-zipfile
-urllib
