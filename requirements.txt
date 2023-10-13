@@ -1,0 +1,6 @@
+openvino
+numpy
+cv2
+gradio
+zipfile
+urllib
